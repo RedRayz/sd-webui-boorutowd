@@ -1,14 +1,18 @@
 import modules.scripts as scripts
+from modules.paths import extensions_dir, script_path
 import gradio as gr
 import os
 import requests
 
 from modules import script_callbacks
 
+MYEXTENSION_DIR = f"{extensions_dir}\\sd-webui-boorutowd"
+
 def convert_to_wd(
         booru_tags: str, 
         booru_url: str,
-        remove_meta_artist: bool
+        remove_meta_artist: bool,
+        to_animagine_style: bool,
         ):
     source = ""
     dest = ""
@@ -30,8 +34,8 @@ def convert_to_wd(
     if not source:
         return "入力が空です。"
 
-    if os.path.exists("removal-list.txt") and remove_meta_artist:
-        f = open('removal-list.txt', 'r', encoding='UTF-8') 
+    if os.path.exists(f"{MYEXTENSION_DIR}\\removal-list.txt") and remove_meta_artist:
+        f = open(f"{MYEXTENSION_DIR}\\removal-list.txt", 'r', encoding='UTF-8') 
         removal = f.read()
         f.close()
         removal = removal.replace("\r\n", "\n")
@@ -72,13 +76,14 @@ def convert_to_wd(
 
 def on_ui_tabs():
     with gr.Blocks(analytics_enabled=False) as ui_component:
-        with gr.Row():
+        with gr.Column():
             danbooru_url = gr.Textbox(label="Danbooru URL", lines=1)
+            convert_to_animagine_style = gr.Checkbox(label="Animagine推奨の並びにする(URLからのみ機能)")
             booru_tags_input = gr.Textbox(label="Booru tags(Danbooru URLが優先されます)", lines=8)
             remove_meta_and_artist = gr.Checkbox(label="MetaとArtist(一部のみ)を削除")
             convert_button = gr.Button("変換", variant='primary')
             output = gr.Textbox(label="結果(テキストボックス右上の四角いアイコンのボタンを押してコピー)", lines=8, show_copy_button=True)
-            convert_button.click(fn=convert_to_wd, inputs=[booru_tags_input, danbooru_url, remove_meta_and_artist], outputs=output)
+            convert_button.click(fn=convert_to_wd, inputs=[booru_tags_input, danbooru_url, remove_meta_and_artist, convert_to_animagine_style], outputs=output)
         return [(ui_component, "Booru WD", "extension_boorutowd_tab")]
 
 script_callbacks.on_ui_tabs(on_ui_tabs)
