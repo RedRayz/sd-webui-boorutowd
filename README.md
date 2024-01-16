@@ -4,7 +4,7 @@
  BooruタグをWebUIのフォーマットに変換するAUTOMATIC1111 Stable diffusion WebUIの拡張機能です。
  
  例: `1girl blonde_hair blue_eyes name_(copyright) upper_body` -> `1girl, blonde hair, blue eyes, name \(copyright\), upper body`
- テキストボックスにタグを入力する以外に一部Booruサイトの投稿URLからも変換できます。URLからであればAn
+ テキストボックスにタグを入力する以外に一部Booruサイトの投稿URLからも変換できます。URLからであればAnimagine推奨の並びにもできます。
 
 ## インストール方法
 WebUIのExtensionタブのInstall from URLに`https://github.com/RedRayz/sd-webui-boorutowd.git`と入力してInstallボタンを押します。
