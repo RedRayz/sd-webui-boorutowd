@@ -71,12 +71,12 @@ def convert_to_wd(
                             source += f"{txt} "
         except:
             print("Failed to fetch danbooru tags.")
-            return "URLからdanbooruタグを取得できません。"
+            return "Could not load danbooru tags from the URL / URLからdanbooruタグを取得できませんでした。"
     else:
         source = booru_tags
 
     if not source:
-        return "入力が空です。"
+        return "Input is empty. / 入力が空です。"
 
     source = source.strip()
 
