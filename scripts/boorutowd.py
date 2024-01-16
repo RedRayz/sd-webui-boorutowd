@@ -39,7 +39,7 @@ def convert_to_wd(
                     else:
                         source = raw_json["tag_string"]
                 else:
-                    pattern = "[1-6]\\+?(girl)|(boy)s?"
+                    pattern = "[1-6]\\+?(girl|boy)s?"
                     repatter = re.compile(pattern)
                     rawtag_general = raw_json["tag_string_general"]
                     general_tags_list = rawtag_general.split(' ')
@@ -123,7 +123,7 @@ def convert_to_wd(
 def on_ui_tabs():
     with gr.Blocks(analytics_enabled=False) as ui_component:
         with gr.Column():
-            danbooru_url = gr.Textbox(label="Danbooru URL", lines=1)
+            danbooru_url = gr.Textbox(label="Danbooru URL(数字の後ろに「?」があれば「?」以降を消去してください)", lines=1)
             convert_to_animagine_style = gr.Checkbox(label="Animagine推奨の並びにする(URLからのみ機能)")
             booru_tags_input = gr.Textbox(label="Booru tags(Danbooru URLが優先されます)", lines=8)
             remove_meta_and_artist = gr.Checkbox(label="MetaとArtist(一部のみ)を削除")
@@ -131,8 +131,6 @@ def on_ui_tabs():
             output = gr.Textbox(label="結果(テキストボックス右上の四角いアイコンのボタンを押してコピー)", lines=8, show_copy_button=True)
             convert_button.click(fn=convert_to_wd, inputs=[booru_tags_input, danbooru_url, remove_meta_and_artist, convert_to_animagine_style], outputs=output)
             
-
-
         return [(ui_component, "Booru to WD", "extension_boorutowd_tab")]
 
 script_callbacks.on_ui_tabs(on_ui_tabs)
