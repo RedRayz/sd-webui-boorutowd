@@ -1,8 +1,9 @@
-from modules.paths import extensions_dir, script_path
+from modules.paths import extensions_dir
 import gradio as gr
 import os
 import requests
 import re
+import contextlib
 
 from modules import script_callbacks
 from modules import scripts
@@ -119,18 +120,41 @@ def convert_to_wd(
 
     return dest
 
+def send_text(old_text, new_text):
+    if not old_text:
+        return new_text
+    return old_text + " " + new_text
 
-def on_ui_tabs():
-    with gr.Blocks(analytics_enabled=False) as ui_component:
-        with gr.Column():
-            danbooru_url = gr.Textbox(label="Danbooru URL(数字の後ろに「?」があれば「?」以降を消去してください)", lines=1)
-            convert_to_animagine_style = gr.Checkbox(label="Animagine推奨の並びにする(URLからのみ機能)")
-            booru_tags_input = gr.Textbox(label="Booru tags(Danbooru URLが優先されます)", lines=8)
-            remove_meta_and_artist = gr.Checkbox(label="MetaとArtist(一部のみ)を削除")
-            convert_button = gr.Button("変換", variant='primary')
-            output = gr.Textbox(label="結果(テキストボックス右上の四角いアイコンのボタンを押してコピー)", lines=8, show_copy_button=True)
-            convert_button.click(fn=convert_to_wd, inputs=[booru_tags_input, danbooru_url, remove_meta_and_artist, convert_to_animagine_style], outputs=output)
-            
-        return [(ui_component, "Booru to WD", "extension_boorutowd_tab")]
+class BooruToWd(scripts.Script):
+    def __init__(self) -> None:
+        super().__init__()
 
-script_callbacks.on_ui_tabs(on_ui_tabs)
+    def title(self):
+        return "Booru to WD"
+
+    def show(self, is_img2img):
+        return scripts.AlwaysVisible
+    
+    def ui(self, is_img2img):
+        with gr.Accordion(label="Booru to WD", open=False, elem_id="boorutowd_ui"):
+            with gr.Column():
+                danbooru_url = gr.Textbox(label="Danbooru URL(数字の後ろに「?」があれば「?」以降を消去してください)", lines=1)
+                convert_to_animagine_style = gr.Checkbox(label="Animagine推奨の並びにする(URLからのみ機能)")
+                booru_tags_input = gr.Textbox(label="Booru tags(Danbooru URLが優先されます)", lines=8)
+                remove_meta_and_artist = gr.Checkbox(label="MetaとArtist(一部のみ)を削除")
+                convert_button = gr.Button("変換", variant='primary')
+                output = gr.Textbox(label="結果(テキストボックス右上の四角いアイコンのボタンを押してコピー)", lines=8, show_copy_button=True)
+                convert_button.click(fn=convert_to_wd, inputs=[booru_tags_input, danbooru_url, remove_meta_and_artist, convert_to_animagine_style], outputs=output)
+                send_to_prompt = gr.Button("結果をプロンプトに送信", variant='secondary')
+                with contextlib.suppress(AttributeError):
+                    if is_img2img:
+                        send_to_prompt.click(fn=send_text, inputs=[self.boxxIMG, output], outputs=self.boxxIMG)
+                    else:
+                        send_to_prompt.click(fn=send_text, inputs=[self.boxx, output], outputs=self.boxx)
+            return [danbooru_url, convert_to_animagine_style, booru_tags_input, remove_meta_and_artist, convert_button, output, send_to_prompt]
+
+    def after_component(self, component, **kwargs):
+        if kwargs.get("elem_id") == "txt2img_prompt":
+            self.boxx = component
+        if kwargs.get("elem_id") == "img2img_prompt":
+            self.boxxIMG = component
