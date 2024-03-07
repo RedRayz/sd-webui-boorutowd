@@ -90,7 +90,7 @@ def convert_to_wd(
         sourceTags = source.split(' ')
         for i, tag in enumerate(tags):
             for j, src in enumerate(sourceTags):
-                if(tag == src and tag):
+                if(tag == src and tag) or ("user_" in src):
                     # print(f"Found removal tag: {src}")
                     sourceTags[j] = ''
 
@@ -141,7 +141,7 @@ class BooruToWd(scripts.Script):
                 danbooru_url = gr.Textbox(label="Danbooru URL", lines=1)
                 convert_to_animagine_style = gr.Checkbox(label="Animagineスタイルにする(URLからのみ機能)/Animagine style(only works for the URL)")
                 booru_tags_input = gr.Textbox(label="Booru tags(URLが優先されます/URL takes precedence)", lines=8)
-                remove_meta_and_artist = gr.Checkbox(label="MetaとArtistを削除/Remove meta and artist")
+                remove_meta_and_artist = gr.Checkbox(label="Meta、Artistとuser_xxxを削除/Remove meta, artist, and user_xxx")
                 convert_button = gr.Button("変換/Convert", variant='primary')
                 output = gr.Textbox(label="結果/Result", lines=8, show_copy_button=True)
                 convert_button.click(fn=convert_to_wd, inputs=[booru_tags_input, danbooru_url, remove_meta_and_artist, convert_to_animagine_style], outputs=output)
