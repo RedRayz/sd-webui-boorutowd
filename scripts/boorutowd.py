@@ -8,7 +8,7 @@ import contextlib
 from modules import script_callbacks
 from modules import scripts
 
-MYEXTENSION_DIR = f"{extensions_dir}\\sd-webui-boorutowd"
+MYEXTENSION_DIR = f"{extensions_dir}/sd-webui-boorutowd"
 
 def convert_to_wd(
         booru_tags: str, 
@@ -81,8 +81,8 @@ def convert_to_wd(
     source = source.strip()
 
 
-    if os.path.exists(f"{MYEXTENSION_DIR}\\removal-list.txt") and remove_meta_artist and not booru_url:
-        f = open(f"{MYEXTENSION_DIR}\\removal-list.txt", 'r', encoding='UTF-8') 
+    if os.path.exists(f"{MYEXTENSION_DIR}/removal-list.txt") and remove_meta_artist and not booru_url:
+        f = open(f"{MYEXTENSION_DIR}/removal-list.txt", 'r', encoding='UTF-8') 
         removal = f.read()
         f.close()
         removal = removal.replace('\r\n', '\n')
